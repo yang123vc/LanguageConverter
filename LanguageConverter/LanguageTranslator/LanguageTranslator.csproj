@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASTDumper.cs" />
     <Compile Include="CodeGen\Interfaces\ICustomCodeGenerator.cs" />
     <Compile Include="CodeGen\Interfaces\ICustomSyntaxTree.cs" />
     <Compile Include="Java\Interfaces\IDeclarationNode.cs" />
