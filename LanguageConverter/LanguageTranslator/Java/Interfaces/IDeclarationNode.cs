@@ -2,5 +2,6 @@
 {
     public interface IDeclarationNode
     {
+        DeclarationKind Kind { get; }
     }
 }
