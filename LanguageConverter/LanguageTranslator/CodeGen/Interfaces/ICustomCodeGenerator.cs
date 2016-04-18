@@ -1,6 +1,6 @@
 ﻿namespace LanguageTranslator.CodeGen.Interfaces
 {
-    interface ICustomCodeGenerator
+    public interface ICustomCodeGenerator
     {
         string FileExtension { get; }
 

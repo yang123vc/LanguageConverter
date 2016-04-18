@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace LanguageTranslator
 {
-    class TranslationRunner
+    public class TranslationRunner
     {
         private readonly ICustomCodeGenerator codeGenerator;
         private readonly IExtensionPoint[] extensionPoints;
