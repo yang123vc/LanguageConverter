@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageConverterCore", "LanguageConverterCore\LanguageConverterCore.csproj", "{B4552191-C10C-46A2-9D34-DF345BDF9C12}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageTranslator", "LanguageTranslator\LanguageTranslator.csproj", "{2937399B-0C13-42A0-A22F-D49A780FC10D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageConverterTest", "LanguageConverterTest\LanguageConverterTest.csproj", "{441120E0-8E88-4B5D-89F1-D0B6C3AEB961}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B4552191-C10C-46A2-9D34-DF345BDF9C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4552191-C10C-46A2-9D34-DF345BDF9C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4552191-C10C-46A2-9D34-DF345BDF9C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4552191-C10C-46A2-9D34-DF345BDF9C12}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2937399B-0C13-42A0-A22F-D49A780FC10D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2937399B-0C13-42A0-A22F-D49A780FC10D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2937399B-0C13-42A0-A22F-D49A780FC10D}.Release|Any CPU.ActiveCfg = Release|Any CPU
