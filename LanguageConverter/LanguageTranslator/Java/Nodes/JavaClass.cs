@@ -9,6 +9,7 @@ namespace LanguageTranslator.Java.Nodes
         public JavaField[] Fields { get; set; }
         public IMethod[] Methods { get; set; }
         public DeclarationKind Kind { get { return DeclarationKind.Class; } }
+        public Accessibility DeclaredAccessibility { get; set; }
         public INamedTypeSymbol TypeSymbol { get; set; }
     }
 }

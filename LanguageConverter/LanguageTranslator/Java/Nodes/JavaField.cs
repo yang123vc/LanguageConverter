@@ -10,5 +10,6 @@ namespace LanguageTranslator.Java.Nodes
         public IStmt Initialization { get; set; }
         public ITypeSymbol TypeSymbol { get; set; }
         public DeclarationKind Kind { get { return DeclarationKind.Field; } }
+        public Accessibility DeclaredAccessibility { get; set; }
     }
 }

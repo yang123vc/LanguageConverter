@@ -11,6 +11,7 @@ namespace LanguageTranslator.Java.Nodes
         public bool IsStatic { get; set; }
         public IMethodSymbol MethodSymbol { get; set; }
         public DeclarationKind Kind { get { return DeclarationKind.Ctor; } }
+        public Accessibility DeclaredAccessibility { get; set; }
         public BaseCtorCallExpr BaseCtorCallExpr { get; set; }
     }
 }

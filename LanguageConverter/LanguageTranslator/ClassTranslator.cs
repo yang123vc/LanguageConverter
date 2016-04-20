@@ -23,9 +23,7 @@ namespace LanguageTranslator
         {
             var symbol = semanticModel.GetDeclaredSymbol(declarationNode);
             if (symbol == null)
-                throw new Exception("Cannot build semantic information for class type");
-            if (symbol.Constructors.Length > 1)
-                throw new Exception("C# class has more than 1 constructor");
+                throw new Exception("Cannot build semantic information for class type");            
             var descendantNodes = declarationNode.DescendantNodes().ToArray();
             var methods = descendantNodes.OfType<MethodDeclarationSyntax>().Select(method => TranslateMethod(method, statementTranslator)).ToArray();
             var ctors = descendantNodes.OfType<ConstructorDeclarationSyntax>().Select(ctor => TranslateCtor(ctor, statementTranslator)).ToArray();
@@ -36,7 +34,8 @@ namespace LanguageTranslator
                 Name = className,
                 Methods = ctors.Concat<IMethod>(methods).ToArray(),
                 Fields = fields.ToArray(),
-                TypeSymbol = symbol
+                TypeSymbol = symbol,
+                DeclaredAccessibility = symbol.DeclaredAccessibility
             };
         }
 
@@ -61,7 +60,8 @@ namespace LanguageTranslator
                 }).ToArray(),
                 Body = statementVisitor.Visit(node.Body),
                 MethodSymbol = methodSymbol,
-                BaseCtorCallExpr = baseCtorCall
+                BaseCtorCallExpr = baseCtorCall,
+                DeclaredAccessibility = methodSymbol.DeclaredAccessibility
             };
         }
 
@@ -83,7 +83,8 @@ namespace LanguageTranslator
                 }).ToArray(),
                 Body = body,
                 IsStatic = isStatic,
-                MethodSymbol = methodSymbol
+                MethodSymbol = methodSymbol,
+                DeclaredAccessibility = methodSymbol.DeclaredAccessibility
             };
         }
 
@@ -112,6 +113,7 @@ namespace LanguageTranslator
                 IsStatic = symbol.IsStatic,
                 Initialization = node.Initializer != null ? statementVisitor.Visit(node.Initializer) : null,
                 TypeSymbol = SymbolHelper.GetVariableSymbol(symbol),
+                DeclaredAccessibility = symbol.DeclaredAccessibility
             };
         }        
     }
