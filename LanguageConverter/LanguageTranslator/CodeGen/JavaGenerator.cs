@@ -25,17 +25,17 @@ namespace LanguageTranslator.CodeGen
             {                
                 case DeclarationKind.Class:
                     return TraverseClass(declaration as JavaClass);
+                case DeclarationKind.Field:
+                    return TraverseField(declaration as JavaField);
 //                case DeclarationKind.Method:
 //                    return TraverseMethod(declaration as JavaMethod);
 //                case DeclarationKind.Ctor:
-//                    return TraverseCtor(declaration as CtorMethod);
-//                case DeclarationKind.Field:
-//                    return TraverseField(declaration as JavaField);
+//                    return TraverseCtor(declaration as CtorMethod);                
             }
             return default(string);
-        }
+        }        
 
-        public string TraverseClass(JavaClass javaClass)
+        private string TraverseClass(JavaClass javaClass)
         {
             var baseClass = "";
             var baseType = javaClass.TypeSymbol.BaseType;
@@ -54,8 +54,18 @@ namespace LanguageTranslator.CodeGen
                 body.Append(TraverseDeclaration(method));
             }
             return string.IsNullOrEmpty(baseClass)
-                ? string.Format("class {0} {{ {1} }}", javaClass.TypeSymbol, body)
-                : string.Format("class {0} extends {1} {{ {2} }}", javaClass.TypeSymbol, baseClass, body);
+                ? string.Format("{0} class {1} {{ {2} }}", javaClass.TypeSymbol.DeclaredAccessibility, javaClass.TypeSymbol, body).Trim()
+                : string.Format("{0} class {1} extends {2} {{ {3} }}", javaClass.TypeSymbol.DeclaredAccessibility, javaClass.TypeSymbol, baseClass, body).Trim();
+        }
+
+        private string TraverseField(JavaField javaField)
+        {
+            var staticStr = javaField.IsStatic ? "static" : "";
+            var fieldStr = string.Format("{0} {1} {2} {3}", javaField.TypeSymbol.DeclaredAccessibility, staticStr, javaField.TypeSymbol, javaField.FieldName);
+            return fieldStr.Trim();
+//            return javaField.Initialization != null
+//                ? string.Format("{0} = {1}", fieldStr, TraverseStmt(javaField.Initialization)).Trim()
+//                : fieldStr.Trim();
         }
     }
 }

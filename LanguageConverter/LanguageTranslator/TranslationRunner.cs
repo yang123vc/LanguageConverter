@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,12 +52,32 @@ namespace LanguageTranslator
             var generatedCode = codeGenerator.Generate(javaSyntaxTree);
             if (options.IsBeautify)
             {
-                //Beautify
+                Beautify(generatedCode, outputFile);
+                return;
             }
             if (!string.IsNullOrEmpty(generatedCode))
             {
                 File.WriteAllText(outputFile, generatedCode, Encoding.UTF8);
             }            
+        }
+
+        private void Beautify(string code, string outputFile)
+        {
+            var beatifierPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "beautifier");
+            var beatifierExePath = Path.Combine(beatifierPath, "uncrustify.exe");
+            var confingFileName = "sun.cfg";
+            var proc = new Process();
+            proc.StartInfo = new ProcessStartInfo
+            {                
+                WorkingDirectory = beatifierPath,
+                FileName = beatifierExePath,
+                RedirectStandardInput = true,
+                UseShellExecute = false,
+                Arguments = string.Format("-c {0} -o {1}", confingFileName, outputFile)
+            };
+            proc.Start();
+            proc.StandardInput.WriteLine(code);
+            proc.Close();
         }
 
         private JavaSyntaxTree GetSyntaxTree(string inputFile)

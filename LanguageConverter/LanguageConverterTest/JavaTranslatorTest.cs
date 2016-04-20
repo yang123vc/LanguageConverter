@@ -18,7 +18,7 @@ namespace LanguageConverterTest
             IExtensionPoint[] extensionPoints = { new StringExtensionPoint() };
             var options = new TranslationOptions
             {
-                IsBeautify = false,
+                IsBeautify = true,
                 MultiThreading = false
             };
             var translatorRunner = new TranslationRunner(generator, extensionPoints, options);

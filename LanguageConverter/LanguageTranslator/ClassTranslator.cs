@@ -111,7 +111,7 @@ namespace LanguageTranslator
                 FieldName = node.Identifier.ToString(),
                 IsStatic = symbol.IsStatic,
                 Initialization = node.Initializer != null ? statementVisitor.Visit(node.Initializer) : null,
-                TypeSymbol = SymbolHelper.GetVariableSymbol(symbol)
+                TypeSymbol = SymbolHelper.GetVariableSymbol(symbol),
             };
         }        
     }
