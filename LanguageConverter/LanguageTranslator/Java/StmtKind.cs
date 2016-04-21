@@ -30,6 +30,7 @@
         IdentifierExpr,
         ArrayLiteralExpr,
         CompoundLocalDeclStmt,
-        BaseCtorCallExpr
+        BaseCtorCallExpr,
+        BaseExpr
     }
 }

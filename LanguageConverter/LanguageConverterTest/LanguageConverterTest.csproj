@@ -72,6 +72,9 @@
     <Compile Include="TestFiles\TestBuiltinTypes.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="TestFiles\TestInharitance.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
     <Content Include="..\beautifier\uncrustify.exe">
       <Link>beautifier\uncrustify.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

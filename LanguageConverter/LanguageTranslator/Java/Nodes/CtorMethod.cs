@@ -5,7 +5,7 @@ namespace LanguageTranslator.Java.Nodes
 {
     public class CtorMethod : IMethod
     {        
-        public string Name { get { return "constructor"; } }
+        public string Name { get; set; }
         public MethodParameterInfo[] Parameters { get; set; }
         public IStmt Body { get; set; }
         public bool IsStatic { get; set; }

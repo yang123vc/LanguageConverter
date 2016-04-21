@@ -79,6 +79,7 @@
     <Compile Include="Java\MethodParametrInfo.cs" />
     <Compile Include="Java\Nodes\ArrayCreationExpr.cs" />
     <Compile Include="Java\Nodes\BaseCtorCallExpr.cs" />
+    <Compile Include="Java\Nodes\BaseExpr.cs" />
     <Compile Include="Java\Nodes\BinaryExpr.cs" />
     <Compile Include="Java\Nodes\BreakStmt.cs" />
     <Compile Include="Java\Nodes\CallExpr.cs" />

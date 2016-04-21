@@ -52,6 +52,7 @@ namespace LanguageTranslator
             }
             return new CtorMethod
             {
+                Name = methodSymbol.ReceiverType.Name,
                 Parameters = methodSymbol.Parameters.Select(parameterSymbol => new MethodParameterInfo
                 {
                     Name = parameterSymbol.Name,

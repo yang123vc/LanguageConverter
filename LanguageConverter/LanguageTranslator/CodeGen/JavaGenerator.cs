@@ -28,10 +28,10 @@ namespace LanguageTranslator.CodeGen
                     return TraverseClass(declaration as JavaClass);
                 case DeclarationKind.Field:
                     return TraverseField(declaration as JavaField);
+                case DeclarationKind.Ctor:
+                    return TraverseCtor(declaration as CtorMethod);
                 case DeclarationKind.Method:
                     return TraverseMethod(declaration as JavaMethod);
-//                case DeclarationKind.Ctor:
-//                    return TraverseCtor(declaration as CtorMethod);                
             }
             return default(string);
         }        
@@ -68,6 +68,36 @@ namespace LanguageTranslator.CodeGen
             return javaField.Initialization != null
                 ? string.Format("{0} = {1}", fieldStr, statementTraverser.TraverseStmt(javaField.Initialization)).Trim()
                 : fieldStr.Trim();
+        }
+
+        private string TraverseCtor(CtorMethod ctorMethod)
+        {
+            var javaCtorCode = new StringBuilder();
+            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(ctorMethod.DeclaredAccessibility);
+            javaCtorCode.AppendFormat("{0} {1}({2}) ", declaredAccesibility, ctorMethod.Name, string.Join(", ", ctorMethod.Parameters.Select(GetArgument)));
+            IStmt ctorBody = ctorMethod.Body;
+            if (ctorMethod.BaseCtorCallExpr != null)
+            {
+                ctorBody = CombineStatements(ctorMethod.BaseCtorCallExpr, ctorBody);
+            }
+            javaCtorCode.Append(statementTraverser.TraverseStmt(ctorBody));
+            return javaCtorCode.ToString().Trim();
+        }
+
+        private static IStmt CombineStatements(IStmt stmt1, IStmt stmt2)
+        {
+            var stmt1Block = stmt1 as CompoundStmt;
+            var stmt2Block = stmt2 as CompoundStmt;
+            IStmt[] statements;
+            if (stmt1Block != null && stmt2Block != null)
+                statements = stmt1Block.Statements.Concat(stmt2Block.Statements).ToArray();
+            else if (stmt1Block != null)
+                statements = stmt1Block.Statements.Concat(new[] { stmt2 }).ToArray();
+            else if (stmt2Block != null)
+                statements = new[] { stmt1 }.Concat(stmt2Block.Statements).ToArray();
+            else
+                statements = new[] { stmt1, stmt2 };
+            return new CompoundStmt { Statements = statements };
         }
 
         private string TraverseMethod(JavaMethod javaMethod)

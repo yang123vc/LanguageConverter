@@ -367,6 +367,11 @@ namespace LanguageTranslator
             };
         }
 
+        public override IStmt VisitBaseExpression(BaseExpressionSyntax node)
+        {
+            return new BaseExpr();
+        }
+
         private static IStmt WrapToBlock(IStmt node)
         {
             return node is CompoundStmt

@@ -16,9 +16,6 @@
 
         public short TestShort()
         {
-            int a = 1;
-            var b = "a";
-            char c;
             return 0;
         }
 
