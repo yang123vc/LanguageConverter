@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using LanguageTranslator.Java;
 using LanguageTranslator.Java.Interfaces;
@@ -25,9 +24,11 @@ namespace LanguageTranslator
             if (symbol == null)
                 throw new Exception("Cannot build semantic information for class type");            
             var descendantNodes = declarationNode.DescendantNodes().ToArray();
-            var methods = descendantNodes.OfType<MethodDeclarationSyntax>().Select(method => TranslateMethod(method, statementTranslator)).ToArray();
+            var methods = descendantNodes.OfType<MethodDeclarationSyntax>()
+                                         .Select(method => TranslatorHelper.TranslateMethod(semanticModel, method, statementTranslator)).ToArray();
             var ctors = descendantNodes.OfType<ConstructorDeclarationSyntax>().Select(ctor => TranslateCtor(ctor, statementTranslator)).ToArray();
-            var fields = GetFields(declarationNode).Select(node => TranslateField(node, statementTranslator));
+            var fields = TranslatorHelper.GetFields(declarationNode)
+                                         .Select(node => TranslatorHelper.TranslateField(semanticModel, node, statementTranslator));
             var className = declarationNode.Identifier.ToString();
             return new JavaClass
             {
@@ -56,7 +57,7 @@ namespace LanguageTranslator
                 Parameters = methodSymbol.Parameters.Select(parameterSymbol => new MethodParameterInfo
                 {
                     Name = parameterSymbol.Name,
-                    DefaultValue = GetParameterDefaultValue(parameterSymbol),
+                    DefaultValue = TranslatorHelper.GetParameterDefaultValue(parameterSymbol),
                     ParameterSymbol = parameterSymbol
                 }).ToArray(),
                 Body = statementVisitor.Visit(node.Body),
@@ -65,57 +66,5 @@ namespace LanguageTranslator
                 DeclaredAccessibility = methodSymbol.DeclaredAccessibility
             };
         }
-
-        private JavaMethod TranslateMethod(MethodDeclarationSyntax node, CSharpSyntaxVisitor<IStmt> statementVisitor)
-        {
-            var methodSymbol = semanticModel.GetDeclaredSymbol(node);
-            var isStatic = methodSymbol.IsStatic;
-            var body = methodSymbol.IsAbstract
-                ? new CompoundStmt { Statements = new IStmt[0] }
-                : statementVisitor.Visit(node.Body);
-            return new JavaMethod
-            {
-                Name = methodSymbol.Name,
-                Parameters = methodSymbol.Parameters.Select(parameterSymbol => new MethodParameterInfo
-                {
-                    Name = parameterSymbol.Name,
-                    DefaultValue = GetParameterDefaultValue(parameterSymbol),
-                    ParameterSymbol = parameterSymbol
-                }).ToArray(),
-                Body = body,
-                IsStatic = isStatic,
-                MethodSymbol = methodSymbol,
-                DeclaredAccessibility = methodSymbol.DeclaredAccessibility
-            };
-        }
-
-        private static string GetParameterDefaultValue(IParameterSymbol parameter)
-        {
-            if (!parameter.HasExplicitDefaultValue)
-                return null;
-            var defaultValue = parameter.ExplicitDefaultValue;
-            return defaultValue == null
-                ? "null"
-                : defaultValue.ToString();
-        }
-
-        private static IEnumerable<VariableDeclaratorSyntax> GetFields(ClassDeclarationSyntax node)
-        {
-            var fieldDeclarations = node.DescendantNodes().OfType<FieldDeclarationSyntax>();
-            return fieldDeclarations.SelectMany(fieldDecl => fieldDecl.DescendantNodes().OfType<VariableDeclaratorSyntax>());
-        }
-
-        private JavaField TranslateField(VariableDeclaratorSyntax node, CSharpSyntaxVisitor<IStmt> statementVisitor)
-        {
-            var symbol = semanticModel.GetDeclaredSymbol(node);
-            return new JavaField
-            {
-                FieldName = node.Identifier.ToString(),
-                IsStatic = symbol.IsStatic,
-                Initialization = node.Initializer != null ? statementVisitor.Visit(node.Initializer) : null,
-                TypeSymbol = SymbolHelper.GetVariableSymbol(symbol),
-                DeclaredAccessibility = symbol.DeclaredAccessibility
-            };
-        }        
     }
 }

@@ -9,6 +9,5 @@ namespace LanguageTranslator.Java.Interfaces
         IStmt Body { get; }
         bool IsStatic { get; }
         IMethodSymbol MethodSymbol { get; }
-
     }
 }

@@ -68,7 +68,9 @@
     <Compile Include="CodeGen\StatementTraverser.cs" />
     <Compile Include="ExtensionPoints\.Net\StringExtensionPoint.cs" />
     <Compile Include="ExtensionPoints\ExtensionPointHelper.cs" />
+    <Compile Include="InterfaceTranslator.cs" />
     <Compile Include="Java\DeclarationKind.cs" />
+    <Compile Include="Java\Interfaces\IClassOrInterface.cs" />
     <Compile Include="Java\Interfaces\IDeclarationNode.cs" />
     <Compile Include="Java\Interfaces\IMethod.cs" />
     <Compile Include="Java\Interfaces\INode.cs" />
@@ -94,6 +96,7 @@
     <Compile Include="Java\Nodes\IndexExpr.cs" />
     <Compile Include="Java\Nodes\JavaClass.cs" />
     <Compile Include="Java\Nodes\JavaField.cs" />
+    <Compile Include="Java\Nodes\JavaInterface.cs" />
     <Compile Include="Java\Nodes\JavaMethod.cs" />
     <Compile Include="Java\Nodes\LiteralExpr.cs" />
     <Compile Include="Java\Nodes\LocalDeclStmt.cs" />
@@ -116,6 +119,7 @@
     <Compile Include="SyntaxNodeHelper.cs" />
     <Compile Include="TranslationOptions.cs" />
     <Compile Include="TranslationRunner.cs" />
+    <Compile Include="TranslatorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\beautifier\sun.cfg">

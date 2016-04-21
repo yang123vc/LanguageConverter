@@ -33,9 +33,11 @@ namespace LanguageTranslator
                 };
             }
             var statementTranslator = new StatementTranslator(semanticModel, extensionPoints);
+            var interfaceTranslator = new InterfaceTranslator(semanticModel);
             var classTranslator = new ClassTranslator(semanticModel);
             var descedantNodes = rootNode.DescendantNodes();
             var declarations = new List<IDeclarationNode>();
+            declarations.AddRange(descedantNodes.OfType<InterfaceDeclarationSyntax>().Select(decl => interfaceTranslator.Translate(decl, statementTranslator)));
             declarations.AddRange(descedantNodes.OfType<ClassDeclarationSyntax>().Select(decl => classTranslator.Translate(decl, statementTranslator)));
 
             return new JavaSyntaxTree

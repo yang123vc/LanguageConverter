@@ -2,6 +2,7 @@
 {
     public enum DeclarationKind
     {
+        Interface,
         Class,
         Ctor,
         Method,

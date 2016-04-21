@@ -24,6 +24,8 @@ namespace LanguageTranslator.CodeGen
         {
             switch (declaration.Kind)
             {
+                case DeclarationKind.Interface:
+                    return TraverseInterface(declaration as JavaInterface);
                 case DeclarationKind.Class:
                     return TraverseClass(declaration as JavaClass);
                 case DeclarationKind.Field:
@@ -34,30 +36,49 @@ namespace LanguageTranslator.CodeGen
                     return TraverseMethod(declaration as JavaMethod);
             }
             return default(string);
-        }        
+        }
+
+        private string TraverseInterface(JavaInterface javaInterface)
+        {
+            return TraverseClassOrInterface(javaInterface, false);
+        }
 
         private string TraverseClass(JavaClass javaClass)
         {
+            return TraverseClassOrInterface(javaClass, true);
+        }
+
+        private string TraverseClassOrInterface(IClassOrInterface node, bool isClass)
+        {
             var baseClass = "";
-            var baseType = javaClass.TypeSymbol.BaseType;
+            var baseType = node.TypeSymbol.BaseType;
             if (baseType != null)
             {
                 baseClass = baseType.Name == "Object" ? "" : baseType.Name;
             }
+            var interfaces = node.TypeSymbol.Interfaces;
             var body = new StringBuilder();
-            foreach (var field in javaClass.Fields)
+            foreach (var field in node.Fields)
             {
                 body.Append(TraverseDeclaration(field));
                 body.Append("; ");
             }
-            foreach (var method in javaClass.Methods)
+            foreach (var method in node.Methods)
             {
                 body.Append(TraverseDeclaration(method));
             }
-            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaClass.DeclaredAccessibility);
-            return string.IsNullOrEmpty(baseClass)
-                ? string.Format("{0} class {1} {{ {2} }}", declaredAccesibility, javaClass.TypeSymbol, body).Trim()
-                : string.Format("{0} class {1} extends {2} {{ {3} }}", declaredAccesibility, javaClass.TypeSymbol, baseClass, body).Trim();
+            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(node.DeclaredAccessibility);
+            string extendsStr;
+            string implementStr;
+            if (isClass)
+            {
+                extendsStr = !string.IsNullOrEmpty(baseClass) ? string.Format(" extends {0} ", baseClass) : "";
+                implementStr = interfaces.Any() ? string.Format(" implements {0} ", string.Join(", ", interfaces.Select(i => i.Name))) : "";
+                return string.Format("{0} class {1}{2}{3} {{ {4} }}", declaredAccesibility, node.TypeSymbol.Name, extendsStr, implementStr, body).Trim();
+            }
+            extendsStr = interfaces.Any() ? string.Format(" extends {0} ", interfaces.First().Name) : "";
+            implementStr = "";
+            return string.Format("{0} interface {1}{2}{3} {{ {4} }}", declaredAccesibility, node.TypeSymbol.Name, extendsStr, implementStr, body).Trim();
         }
 
         private string TraverseField(JavaField javaField)
@@ -103,7 +124,7 @@ namespace LanguageTranslator.CodeGen
         private string TraverseMethod(JavaMethod javaMethod)
         {
             var symbol = javaMethod.MethodSymbol;
-            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaMethod.DeclaredAccessibility);
+            var declaredAccesibility = javaMethod.IsAbstract ? "abstract" : accessibilityResolver.ResolveAccesebility(javaMethod.DeclaredAccessibility);
             var staticStr = javaMethod.IsStatic ? "static" : "";
             return string.Format("{0} {1} {2} {3}({4}) {5}",
                 declaredAccesibility,

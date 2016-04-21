@@ -20,7 +20,8 @@ namespace LanguageTranslator.CodeGen
                     return TraverseObjectCreationExpr(stmt as ObjectCreationExpr);
                 case StmtKind.CompoundStmt:
                     var compoundStmt = stmt as CompoundStmt;
-                    return string.Format("{{ {0} }}", string.Join(" ", compoundStmt.Statements.Select(GenerateSeparateStmt)));
+                    return compoundStmt.Statements.Length == 0 ? ";" 
+                           : string.Format("{{ {0} }}", string.Join(" ", compoundStmt.Statements.Select(GenerateSeparateStmt)));
                 case StmtKind.ReturnStmt:
                     var returnStmt = stmt as ReturnStmt;
                     return returnStmt.Expr != null
