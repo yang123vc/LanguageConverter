@@ -73,7 +73,8 @@ namespace LanguageTranslator
                 FileName = beatifierExePath,
                 RedirectStandardInput = true,
                 UseShellExecute = false,
-                Arguments = string.Format("-c {0} -o {1}", confingFileName, outputFile)
+                CreateNoWindow = false,
+                Arguments = string.Format("-c {0} -o {1} -l java", confingFileName, outputFile)
             };
             proc.Start();
             proc.StandardInput.WriteLine(code);

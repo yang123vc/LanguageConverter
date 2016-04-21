@@ -1,17 +1,17 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using LanguageTranslator.CodeGen.Interfaces;
 using LanguageTranslator.Java;
 using LanguageTranslator.Java.Interfaces;
 using LanguageTranslator.Java.Nodes;
-using Microsoft.CodeAnalysis;
 
 namespace LanguageTranslator.CodeGen
 {
     public class JavaGenerator : ICustomCodeGenerator
     {
         public string FileExtension { get { return ".java"; } }
+        private readonly AccessibilityResolver accessibilityResolver = new AccessibilityResolver();
+        private readonly StatementTraverser statementTraverser = new StatementTraverser();
 
         public string Generate(ICustomSyntaxTree syntaxTree)
         {
@@ -23,13 +23,13 @@ namespace LanguageTranslator.CodeGen
         private string TraverseDeclaration(IDeclarationNode declaration)
         {
             switch (declaration.Kind)
-            {                
+            {
                 case DeclarationKind.Class:
                     return TraverseClass(declaration as JavaClass);
                 case DeclarationKind.Field:
                     return TraverseField(declaration as JavaField);
-//                case DeclarationKind.Method:
-//                    return TraverseMethod(declaration as JavaMethod);
+                case DeclarationKind.Method:
+                    return TraverseMethod(declaration as JavaMethod);
 //                case DeclarationKind.Ctor:
 //                    return TraverseCtor(declaration as CtorMethod);                
             }
@@ -42,7 +42,7 @@ namespace LanguageTranslator.CodeGen
             var baseType = javaClass.TypeSymbol.BaseType;
             if (baseType != null)
             {
-                baseClass = baseType.Name;
+                baseClass = baseType.Name == "Object" ? "" : baseType.Name;
             }
             var body = new StringBuilder();
             foreach (var field in javaClass.Fields)
@@ -54,7 +54,7 @@ namespace LanguageTranslator.CodeGen
             {
                 body.Append(TraverseDeclaration(method));
             }
-            var declaredAccesibility = ResolveAccesebility(javaClass.DeclaredAccessibility);
+            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaClass.DeclaredAccessibility);
             return string.IsNullOrEmpty(baseClass)
                 ? string.Format("{0} class {1} {{ {2} }}", declaredAccesibility, javaClass.TypeSymbol, body).Trim()
                 : string.Format("{0} class {1} extends {2} {{ {3} }}", declaredAccesibility, javaClass.TypeSymbol, baseClass, body).Trim();
@@ -62,36 +62,31 @@ namespace LanguageTranslator.CodeGen
 
         private string TraverseField(JavaField javaField)
         {
-            var declaredAccesibility = ResolveAccesebility(javaField.DeclaredAccessibility);
+            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaField.DeclaredAccessibility);
             var staticStr = javaField.IsStatic ? "static" : "";
             var fieldStr = string.Format("{0} {1} {2} {3}", declaredAccesibility, staticStr, javaField.TypeSymbol, javaField.FieldName);
-            return fieldStr.Trim();
-//            return javaField.Initialization != null
-//                ? string.Format("{0} = {1}", fieldStr, TraverseStmt(javaField.Initialization)).Trim()
-//                : fieldStr.Trim();
+            return javaField.Initialization != null
+                ? string.Format("{0} = {1}", fieldStr, statementTraverser.TraverseStmt(javaField.Initialization)).Trim()
+                : fieldStr.Trim();
         }
 
-        private string ResolveAccesebility(Accessibility declaredAccessibility)
+        private string TraverseMethod(JavaMethod javaMethod)
         {
-            switch (declaredAccessibility)
-            {
-                case Accessibility.NotApplicable:
-                    return "";
-                case Accessibility.Private:
-                    return "private";
-                case Accessibility.ProtectedAndInternal:
-                    return "protected";
-                case Accessibility.Protected:
-                    return "protected";
-                case Accessibility.Internal:
-                    return "";
-                case Accessibility.ProtectedOrInternal:
-                    return "protected";
-                case Accessibility.Public:
-                    return "public";
-                default:
-                    return "";
-            }
+            var symbol = javaMethod.MethodSymbol;
+            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaMethod.DeclaredAccessibility);
+            var staticStr = javaMethod.IsStatic ? "static" : "";
+            return string.Format("{0} {1} {2} {3}({4}) {5}",
+                declaredAccesibility,
+                staticStr,
+                symbol.ReturnType,
+                javaMethod.Name,
+                string.Join(", ", javaMethod.Parameters.Select(GetArgument)),
+                statementTraverser.TraverseStmt(javaMethod.Body));
+        }
+
+        private object GetArgument(MethodParameterInfo methodParameterInfo)
+        {
+            return string.Format("{0} {1}", methodParameterInfo.ParameterSymbol.Type, methodParameterInfo.Name);
         }
     }
 }

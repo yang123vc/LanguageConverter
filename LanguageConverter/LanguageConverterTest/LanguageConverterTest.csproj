@@ -69,7 +69,11 @@
     <Compile Include="DumperTest.cs" />
     <Compile Include="JavaTranslatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="beautifier\uncrustify.exe">
+    <Compile Include="TestFiles\TestBuiltinTypes.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Content Include="..\beautifier\uncrustify.exe">
+      <Link>beautifier\uncrustify.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TestFiles\FieldTest.cs">
@@ -77,7 +81,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="beautifier\sun.cfg">
+    <None Include="..\beautifier\sun.cfg">
+      <Link>beautifier\sun.cfg</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

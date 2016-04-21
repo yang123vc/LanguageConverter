@@ -3,9 +3,9 @@
     public class TestFields
     {
         int a;
-        private int b = 45;
+        private static int b = 45;
         private readonly string c;
-        public static TestFields d;
+        public TestFields d = new TestFields();
         public const string str = "const";
     }
 }

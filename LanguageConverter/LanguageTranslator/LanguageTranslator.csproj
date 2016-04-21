@@ -61,9 +61,11 @@
   <ItemGroup>
     <Compile Include="ASTDumper.cs" />
     <Compile Include="ClassTranslator.cs" />
+    <Compile Include="CodeGen\AccessibilityResolver.cs" />
     <Compile Include="CodeGen\Interfaces\ICustomCodeGenerator.cs" />
     <Compile Include="CodeGen\Interfaces\ICustomSyntaxTree.cs" />
     <Compile Include="CodeGen\JavaGenerator.cs" />
+    <Compile Include="CodeGen\StatementTraverser.cs" />
     <Compile Include="ExtensionPoints\.Net\StringExtensionPoint.cs" />
     <Compile Include="ExtensionPoints\ExtensionPointHelper.cs" />
     <Compile Include="Java\DeclarationKind.cs" />
@@ -115,10 +117,11 @@
     <Compile Include="TranslationRunner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="beautifier\sun.cfg">
+    <None Include="..\beautifier\sun.cfg">
+      <Link>beautifier\sun.cfg</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -126,7 +129,8 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="beautifier\uncrustify.exe">
+    <Content Include="..\beautifier\uncrustify.exe">
+      <Link>beautifier\uncrustify.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
