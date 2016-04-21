@@ -85,7 +85,7 @@ namespace LanguageTranslator.CodeGen
         {
             var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaField.DeclaredAccessibility);
             var staticStr = javaField.IsStatic ? "static" : "";
-            var fieldStr = string.Format("{0} {1} {2} {3}", declaredAccesibility, staticStr, javaField.TypeSymbol, javaField.FieldName);
+            var fieldStr = string.Format("{0} {1} {2} {3}", declaredAccesibility, staticStr, javaField.TypeSymbol.Name, javaField.FieldName);
             return javaField.Initialization != null
                 ? string.Format("{0} = {1}", fieldStr, statementTraverser.TraverseStmt(javaField.Initialization)).Trim()
                 : fieldStr.Trim();
