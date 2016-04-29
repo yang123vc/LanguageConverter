@@ -69,6 +69,9 @@
     <Compile Include="DumperTest.cs" />
     <Compile Include="JavaTranslatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="TestFiles\TestString.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestFiles\TestBuiltinTypes.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

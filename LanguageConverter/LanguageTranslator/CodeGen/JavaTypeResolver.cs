@@ -44,7 +44,7 @@ namespace LanguageTranslator.CodeGen
                 return outputType;
             if (TryResolveClientType(symbol, out outputType))
                 return outputType;
-            return "";
+            return typeName;
         }
 
         private static bool TryResolveBuiltinType(string typeName, out string resolvedType)

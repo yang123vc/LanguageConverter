@@ -67,12 +67,14 @@ namespace LanguageTranslator.CodeGen
                     return "super";
                 case StmtKind.Unknown:
                     return "";
-//                case StmtKind.ArrayAccessExpr:
-//                    break;
-//                case StmtKind.ArrayCreationExpr:
-//                    break;
-//                case StmtKind.IndexExpr:
-//                    break;
+                case StmtKind.ArrayAccessExpr:
+                    var arrayAccessExpr = stmt as ArrayAccessExpr;
+                    return string.Format("{0}[{1}]", TraverseStmt(arrayAccessExpr.Expression),
+                        string.Join(", ", arrayAccessExpr.IndexExpressions.Select(TraverseStmt)));
+                //                case StmtKind.ArrayCreationExpr:
+                //                    break;
+                //                case StmtKind.IndexExpr:
+                //                    break;
                 case StmtKind.CallExpr:
                     var callExpr = stmt as CallExpr;
                     return string.Format("{0}({1})", TraverseStmt(callExpr.Expression), string.Join(", ", callExpr.Arguments.Select(TraverseStmt)));

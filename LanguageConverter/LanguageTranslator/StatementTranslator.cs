@@ -183,7 +183,14 @@ namespace LanguageTranslator
         public override IStmt VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
             //посмотреть ElementAccess
-            return new ReturnStmt();
+            var result = extensionPoints.Translate(node, semanticModel, this);
+            if (result != null)
+                return result;
+            return new ArrayAccessExpr
+            {
+                Expression = Visit(node.Expression),
+                IndexExpressions = node.ArgumentList.Arguments.Select(Visit).ToArray()
+            };
         }
 
         public override IStmt VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)

@@ -15,20 +15,12 @@ namespace LanguageConverterTest
         public void DumpTest()
         {
             const string csCode = @"
-public interface ITestBase
+public class Prog
 {
-    string Field { get; }        
-    int Foo(int x = 2);
-}
-
-public abstract class TestBaseClass : ITestBase
-{
-    private readonly int Field1;
-    public string Field { get; }
-
     public int Foo(int x)
     {
-        return x > 0 ? x + 1 : x - 1;
+        var str = ""lala"";
+        var c = str[1];
     }
 }
 ";
