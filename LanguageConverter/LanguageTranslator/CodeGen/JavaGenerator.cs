@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using LanguageTranslator.CodeGen.Interfaces;
+using LanguageTranslator.ExtensionPoints;
 using LanguageTranslator.Java;
 using LanguageTranslator.Java.Interfaces;
 using LanguageTranslator.Java.Nodes;
@@ -11,7 +12,14 @@ namespace LanguageTranslator.CodeGen
     {
         public string FileExtension { get { return ".java"; } }
         private readonly AccessibilityResolver accessibilityResolver = new AccessibilityResolver();
-        private readonly StatementTraverser statementTraverser = new StatementTraverser();
+        private readonly StatementTraverser statementTraverser;
+        private readonly JavaTypeResolver javaTypeResolver;
+
+        public JavaGenerator(ITypeResolver[] typeResolvers)
+        {
+            javaTypeResolver = new JavaTypeResolver(typeResolvers);
+            statementTraverser = new StatementTraverser(javaTypeResolver);
+        }
 
         public string Generate(ICustomSyntaxTree syntaxTree)
         {
@@ -51,10 +59,10 @@ namespace LanguageTranslator.CodeGen
         private string TraverseClassOrInterface(IClassOrInterface node, bool isClass)
         {
             var baseClass = "";
-            var baseType = node.TypeSymbol.BaseType;
+            var baseType = javaTypeResolver.Resolve(node.TypeSymbol.BaseType);
             if (baseType != null)
             {
-                baseClass = baseType.Name == "Object" ? "" : baseType.Name;
+                baseClass = baseType == "Object" ? "" : baseType;
             }
             var interfaces = node.TypeSymbol.Interfaces;
             var body = new StringBuilder();
@@ -74,18 +82,18 @@ namespace LanguageTranslator.CodeGen
             {
                 extendsStr = !string.IsNullOrEmpty(baseClass) ? string.Format(" extends {0} ", baseClass) : "";
                 implementStr = interfaces.Any() ? string.Format(" implements {0} ", string.Join(", ", interfaces.Select(i => i.Name))) : "";
-                return string.Format("{0} class {1}{2}{3} {{ {4} }}", declaredAccesibility, node.TypeSymbol.Name, extendsStr, implementStr, body).Trim();
+                return string.Format("{0} class {1}{2}{3} {{ {4} }}", declaredAccesibility, javaTypeResolver.Resolve(node.TypeSymbol), extendsStr, implementStr, body).Trim();
             }
             extendsStr = interfaces.Any() ? string.Format(" extends {0} ", interfaces.First().Name) : "";
             implementStr = "";
-            return string.Format("{0} interface {1}{2}{3} {{ {4} }}", declaredAccesibility, node.TypeSymbol.Name, extendsStr, implementStr, body).Trim();
+            return string.Format("{0} interface {1}{2}{3} {{ {4} }}", declaredAccesibility, javaTypeResolver.Resolve(node.TypeSymbol), extendsStr, implementStr, body).Trim();
         }
 
         private string TraverseField(JavaField javaField)
         {
             var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaField.DeclaredAccessibility);
             var staticStr = javaField.IsStatic ? "static" : "";
-            var fieldStr = string.Format("{0} {1} {2} {3}", declaredAccesibility, staticStr, javaField.TypeSymbol.Name, javaField.FieldName);
+            var fieldStr = string.Format("{0} {1} {2} {3}", declaredAccesibility, staticStr, javaTypeResolver.Resolve(javaField.TypeSymbol), javaField.FieldName);
             return javaField.Initialization != null
                 ? string.Format("{0} = {1}", fieldStr, statementTraverser.TraverseStmt(javaField.Initialization)).Trim()
                 : fieldStr.Trim();
@@ -129,7 +137,7 @@ namespace LanguageTranslator.CodeGen
             return string.Format("{0} {1} {2} {3}({4}) {5}",
                 declaredAccesibility,
                 staticStr,
-                symbol.ReturnType,
+                javaTypeResolver.Resolve(symbol.ReturnType),
                 javaMethod.Name,
                 string.Join(", ", javaMethod.Parameters.Select(GetArgument)),
                 statementTraverser.TraverseStmt(javaMethod.Body));

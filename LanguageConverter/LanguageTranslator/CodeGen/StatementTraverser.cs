@@ -6,8 +6,15 @@ using LanguageTranslator.Java.Nodes;
 
 namespace LanguageTranslator.CodeGen
 {
-    internal class StatementTraverser
+    public class StatementTraverser
     {
+        private readonly JavaTypeResolver javaTypeResolver;
+
+        public StatementTraverser(JavaTypeResolver javaTypeResolver)
+        {
+            this.javaTypeResolver = javaTypeResolver;
+        }
+
         public string TraverseStmt(IStmt stmt)
         {
             if (stmt == null) return "";
@@ -38,8 +45,8 @@ namespace LanguageTranslator.CodeGen
                 case StmtKind.LocalDeclStmt:
                     var localDeclStmt = stmt as LocalDeclStmt;
                     return localDeclStmt.Initialization != null
-                        ? string.Format("{0} {1} = {2};", localDeclStmt.TypeSymbol, localDeclStmt.DeclName, TraverseStmt(localDeclStmt.Initialization))
-                        : string.Format("{0} {1};", localDeclStmt.TypeSymbol, localDeclStmt.DeclName);
+                        ? string.Format("{0} {1} = {2};", javaTypeResolver.Resolve(localDeclStmt.TypeSymbol), localDeclStmt.DeclName, TraverseStmt(localDeclStmt.Initialization))
+                        : string.Format("{0} {1};", javaTypeResolver.Resolve(localDeclStmt.TypeSymbol), localDeclStmt.DeclName);
                 case StmtKind.BaseCtorCallExpr:
                     var baseCtorCallExpr = stmt as BaseCtorCallExpr;
                     return string.Format("super({0})", string.Join(", ", baseCtorCallExpr.Arguments.Select(TraverseStmt)));
@@ -114,7 +121,7 @@ namespace LanguageTranslator.CodeGen
         private string TraverseObjectCreationExpr(ObjectCreationExpr objectCreationExpr)
         {
             var arguments = string.Join(", ", objectCreationExpr.Arguments.Select(TraverseStmt));
-            return string.Format("new {0}({1})", objectCreationExpr.TypeInformation.TypeName, arguments);
+            return string.Format("new {0}({1})", javaTypeResolver.Resolve(objectCreationExpr.TypeInformation), arguments);
         }
 
         private object GenerateSeparateStmt(IStmt stmt)

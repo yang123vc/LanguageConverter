@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using LanguageTranslator;
 using LanguageTranslator.CodeGen;
 using LanguageTranslator.ExtensionPoints;
@@ -14,8 +15,8 @@ namespace LanguageConverterTest
         [TestMethod]
         public void Test()
         {
-            var generator = new JavaGenerator();
             IExtensionPoint[] extensionPoints = { new StringExtensionPoint() };
+            var generator = new JavaGenerator(extensionPoints.OfType<ITypeResolver>().ToArray());
             var options = new TranslationOptions
             {
                 IsBeautify = true,

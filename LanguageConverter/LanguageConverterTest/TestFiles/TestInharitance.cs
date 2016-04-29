@@ -10,7 +10,7 @@
         void Bar2(int z);
     }
 
-    public abstract class TestBaseClass
+    public abstract class TestBaseClass : ITest
     {
         public abstract int Tmp();
         protected TestBaseClass(int val)

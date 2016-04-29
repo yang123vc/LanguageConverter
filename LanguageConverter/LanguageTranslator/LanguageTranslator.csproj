@@ -65,9 +65,11 @@
     <Compile Include="CodeGen\Interfaces\ICustomCodeGenerator.cs" />
     <Compile Include="CodeGen\Interfaces\ICustomSyntaxTree.cs" />
     <Compile Include="CodeGen\JavaGenerator.cs" />
+    <Compile Include="CodeGen\JavaTypeResolver.cs" />
     <Compile Include="CodeGen\StatementTraverser.cs" />
     <Compile Include="ExtensionPoints\.Net\StringExtensionPoint.cs" />
     <Compile Include="ExtensionPoints\ExtensionPointHelper.cs" />
+    <Compile Include="ExtensionPoints\ITypeResolver.cs" />
     <Compile Include="InterfaceTranslator.cs" />
     <Compile Include="Java\DeclarationKind.cs" />
     <Compile Include="Java\Interfaces\IClassOrInterface.cs" />
