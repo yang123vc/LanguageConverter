@@ -10,6 +10,6 @@ namespace LanguageTranslator.ExtensionPoints
 
     public interface IExtensionPoint<in TNode> : IExtensionPoint
     {
-        IStmt Translate(TNode node, SemanticModel semanticModel, CSharpSyntaxVisitor<IStmt> visitor);
+        IStmt Translate(TNode expression, SemanticModel semanticModel, CSharpSyntaxVisitor<IStmt> visitor);
     }
 }

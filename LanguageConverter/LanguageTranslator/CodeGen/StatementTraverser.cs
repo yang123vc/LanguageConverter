@@ -45,8 +45,8 @@ namespace LanguageTranslator.CodeGen
                 case StmtKind.LocalDeclStmt:
                     var localDeclStmt = stmt as LocalDeclStmt;
                     return localDeclStmt.Initialization != null
-                        ? string.Format("{0} {1} = {2};", javaTypeResolver.Resolve(localDeclStmt.TypeSymbol), localDeclStmt.DeclName, TraverseStmt(localDeclStmt.Initialization))
-                        : string.Format("{0} {1};", javaTypeResolver.Resolve(localDeclStmt.TypeSymbol), localDeclStmt.DeclName);
+                        ? string.Format("{0} {1} = {2}", javaTypeResolver.Resolve(localDeclStmt.TypeSymbol), localDeclStmt.DeclName, TraverseStmt(localDeclStmt.Initialization))
+                        : string.Format("{0} {1}", javaTypeResolver.Resolve(localDeclStmt.TypeSymbol), localDeclStmt.DeclName);
                 case StmtKind.BaseCtorCallExpr:
                     var baseCtorCallExpr = stmt as BaseCtorCallExpr;
                     return string.Format("super({0})", string.Join(", ", baseCtorCallExpr.Arguments.Select(TraverseStmt)));
@@ -73,8 +73,9 @@ namespace LanguageTranslator.CodeGen
                         string.Join(", ", arrayAccessExpr.IndexExpressions.Select(TraverseStmt)));
                 //                case StmtKind.ArrayCreationExpr:
                 //                    break;
-                //                case StmtKind.IndexExpr:
-                //                    break;
+                case StmtKind.IndexExpr:
+                    var indexExpr = stmt as IndexExpr;
+                    return string.Format("{{{0}}}", string.Join(", ", indexExpr.Elements.Select(TraverseStmt)));
                 case StmtKind.CallExpr:
                     var callExpr = stmt as CallExpr;
                     return string.Format("{0}({1})", TraverseStmt(callExpr.Expression), string.Join(", ", callExpr.Arguments.Select(TraverseStmt)));
@@ -84,10 +85,21 @@ namespace LanguageTranslator.CodeGen
                         TraverseStmt(conditionalExpr.Condition),
                         TraverseStmt(conditionalExpr.ThenStmt),
                         TraverseStmt(conditionalExpr.ElseStmt));
-//                case StmtKind.ForEachStmt:
-//                    break;
-//                case StmtKind.ForStmt:
-//                    break;
+                case StmtKind.ForEachStmt:
+                    var forEachStmt = stmt as ForEachStmt;
+                    return string.Format("for({0} : {1}) {2}", 
+                                         TraverseStmt(forEachStmt.Iterator), 
+                                         TraverseStmt(forEachStmt.SourceContainer), 
+                                         GenerateSeparateStmt(forEachStmt.Body));
+                case StmtKind.ForStmt:
+                    var forStmt = stmt as ForStmt;
+                    var initialization = forStmt.Declaration != null
+                        ? TraverseStmt(forStmt.Declaration)
+                        : string.Join(", ", forStmt.Initializers.Select(TraverseStmt));
+                    return string.Format("for({0}; {1}; {2}) {3}",
+                        initialization, TraverseStmt(forStmt.Condition),
+                        string.Join(", ", forStmt.Incrementors.Select(TraverseStmt)),
+                        GenerateSeparateStmt(forStmt.Body));
                 case StmtKind.IfElseStmt:
                     return TraverseIfElseStmt(stmt as IfElseStmt);
                 case StmtKind.MemberAccessExpr:
@@ -97,14 +109,19 @@ namespace LanguageTranslator.CodeGen
 //                    break;
 //                case StmtKind.SwitchStmt:
 //                    break;
-//                case StmtKind.WhileStmt:
-//                    break;
-//                case StmtKind.DoWhileStmt:
-//                    break;
-//                case StmtKind.FunctionLiteral:
-//                    break;
-//                case StmtKind.ArrayLiteralExpr:
-//                    break;
+                case StmtKind.WhileStmt:
+                    var whileStmt = stmt as WhileStmt;
+                    return string.Format("while({0}) {1}", TraverseStmt(whileStmt.Condition), GenerateSeparateStmt(whileStmt.Body));
+                case StmtKind.DoWhileStmt:
+                    var doWhileStmt = stmt as DoWhileStmt;
+                    return string.Format("do {0} while({1});", GenerateSeparateStmt(doWhileStmt.Body), TraverseStmt(doWhileStmt.Condition));
+                //                case StmtKind.FunctionLiteral:
+                //                    break;
+                //                case StmtKind.ArrayLiteralExpr:
+                //                    break;
+                case StmtKind.ThrowStmt:
+                    var throwStmt = stmt as ThrowStmt;
+                    return string.Format("throw {0}", TraverseStmt(throwStmt.Expression));
                 default:
                     return "";
             }
@@ -123,7 +140,7 @@ namespace LanguageTranslator.CodeGen
         private string TraverseObjectCreationExpr(ObjectCreationExpr objectCreationExpr)
         {
             var arguments = string.Join(", ", objectCreationExpr.Arguments.Select(TraverseStmt));
-            return string.Format("new {0}({1})", javaTypeResolver.Resolve(objectCreationExpr.TypeInformation), arguments);
+            return string.Format("new {0}({1})", javaTypeResolver.Resolve(objectCreationExpr.TypeInformation, true), arguments);
         }
 
         private object GenerateSeparateStmt(IStmt stmt)

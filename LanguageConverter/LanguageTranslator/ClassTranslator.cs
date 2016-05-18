@@ -18,7 +18,7 @@ namespace LanguageTranslator
             this.semanticModel = semanticModel;
         }
 
-        public JavaClass Translate(ClassDeclarationSyntax declarationNode, StatementTranslator statementTranslator)
+        public JavaClass Translate(ClassDeclarationSyntax declarationNode, CSharpSyntaxVisitor<IStmt> statementTranslator)
         {
             var symbol = semanticModel.GetDeclaredSymbol(declarationNode);
             if (symbol == null)
@@ -29,14 +29,17 @@ namespace LanguageTranslator
             var ctors = descendantNodes.OfType<ConstructorDeclarationSyntax>().Select(ctor => TranslateCtor(ctor, statementTranslator)).ToArray();
             var fields = TranslatorHelper.GetFields(declarationNode)
                                          .Select(node => TranslatorHelper.TranslateField(semanticModel, node, statementTranslator));
+            var props = TranslatorHelper.GetProperties(declarationNode)
+                                         .Select(node => TranslatorHelper.TranslateProp(semanticModel, node, statementTranslator));
             var className = declarationNode.Identifier.ToString();
             return new JavaClass
             {
                 Name = className,
                 Methods = ctors.Concat<IMethod>(methods).ToArray(),
-                Fields = fields.ToArray(),
+                Fields = props.Concat(fields).ToArray(),
                 TypeSymbol = symbol,
-                DeclaredAccessibility = symbol.DeclaredAccessibility
+                DeclaredAccessibility = symbol.DeclaredAccessibility,
+                IsAbstract = symbol.IsAbstract
             };
         }
 

@@ -25,7 +25,7 @@ namespace LanguageConverterTest
             var translatorRunner = new TranslationRunner(generator, extensionPoints, options);
             var inDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles");
             var outDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFilesOut");
-            translatorRunner.Translate(inDir, outDir);
+            translatorRunner.Translate(inDir, outDir, null);
         }
     }
 }

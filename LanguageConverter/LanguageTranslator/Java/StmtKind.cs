@@ -10,6 +10,7 @@
         CompoundStmt,
         BreakStmt,
         CallExpr,
+        ThrowStmt,
         ConditionalExpr,
         ForEachStmt,
         ForStmt,

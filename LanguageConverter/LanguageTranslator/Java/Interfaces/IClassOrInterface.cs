@@ -9,5 +9,6 @@ namespace LanguageTranslator.Java.Interfaces
         JavaField[] Fields { get; }
         IMethod[] Methods { get; }
         INamedTypeSymbol TypeSymbol { get; }
+        bool IsAbstract { get; }
     }
 }

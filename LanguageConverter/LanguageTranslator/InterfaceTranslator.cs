@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using LanguageTranslator.Java.Interfaces;
 using LanguageTranslator.Java.Nodes;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,7 +17,7 @@ namespace LanguageTranslator
             this.semanticModel = semanticModel;
         }
 
-        public JavaInterface Translate(InterfaceDeclarationSyntax declarationNode, StatementTranslator statementTranslator)
+        public JavaInterface Translate(InterfaceDeclarationSyntax declarationNode, CSharpSyntaxVisitor<IStmt> statementTranslator)
         {
             var symbol = semanticModel.GetDeclaredSymbol(declarationNode);
             if (symbol == null)
@@ -26,12 +27,14 @@ namespace LanguageTranslator
                                          .Select(method => TranslatorHelper.TranslateMethod(semanticModel, method, statementTranslator)).ToArray();
             var fields = TranslatorHelper.GetFields(declarationNode)
                                          .Select(node => TranslatorHelper.TranslateField(semanticModel, node, statementTranslator));
+            var props = TranslatorHelper.GetProperties(declarationNode)
+                                         .Select(node => TranslatorHelper.TranslateProp(semanticModel, node, statementTranslator));
             var className = declarationNode.Identifier.ToString();
             return new JavaInterface
             {
                 Name = className,
                 Methods = methods,
-                Fields = fields.ToArray(),
+                Fields = props.Concat(fields).ToArray(),
                 TypeSymbol = symbol,
                 DeclaredAccessibility = symbol.DeclaredAccessibility
             };

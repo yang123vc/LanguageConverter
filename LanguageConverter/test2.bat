@@ -1,0 +1,1 @@
+"LanguageTranslator\bin\Debug\LanguageTranslator.exe" "C:\Users\Vova\Documents\Visual Studio 2015\Projects\Test2" "C:\Users\Vova\IdeaProjects\Test2" "C:\Users\Vova\Documents\Visual Studio 2015\Projects\Test2\bin\Debug" "RepetitionDetection.exe"

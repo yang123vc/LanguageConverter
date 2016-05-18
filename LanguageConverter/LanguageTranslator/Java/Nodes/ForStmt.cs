@@ -4,6 +4,7 @@ namespace LanguageTranslator.Java.Nodes
 {
     public class ForStmt : IStmt
     {
+        public IStmt Declaration { get; set; }
         public IStmt[] Initializers { get; set; }        
         public IStmt Condition { get; set; }
         public IStmt[] Incrementors { get; set; }

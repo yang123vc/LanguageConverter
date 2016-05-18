@@ -47,6 +47,8 @@ namespace LanguageTranslator.ExtensionPoints.Net
                 {"ToUpper", "toUpperCase"},
                 {"EndsWith", "endsWith"},
                 {"StartsWith", "startsWith"},
+                {"IndexOf", "indexOf"},
+                {"Substring", "substring"},
                 {"Contains", "contains"}
             };
             if (exactSignatures.ContainsKey(symbol.Name))
@@ -62,7 +64,7 @@ namespace LanguageTranslator.ExtensionPoints.Net
                     Arguments = arguments.Select(visitor.Visit).ToArray()
                 };
             }
-            if (symbol.Name == "IsNullOrEmpty") //string.IsNullOrEmpty(s) => String.isNullOrEmpty(s)
+            if (symbol.Name == "IsNullOrEmpty") //string.IsNullOrEmpty(s) => s.isEmpty()
             {
                 return new CallExpr
                 {

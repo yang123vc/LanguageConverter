@@ -11,5 +11,6 @@ namespace LanguageTranslator.Java.Nodes
         public DeclarationKind Kind { get { return DeclarationKind.Class; } }
         public Accessibility DeclaredAccessibility { get; set; }
         public INamedTypeSymbol TypeSymbol { get; set; }
+        public bool IsAbstract { get; set; }
     }
 }

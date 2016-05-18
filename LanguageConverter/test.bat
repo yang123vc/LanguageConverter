@@ -1,0 +1,1 @@
+"LanguageTranslator\bin\Debug\LanguageTranslator.exe" "C:\Users\Vova\Documents\Visual Studio 2015\Projects\Test\src" "C:\Users\Vova\IdeaProjects\Test\src" "C:\Users\Vova\Documents\Visual Studio 2015\Projects\Test\bin\Debug" "Test.exe"

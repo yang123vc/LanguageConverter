@@ -51,6 +51,12 @@ namespace LanguageTranslator
             return fieldDeclarations.SelectMany(fieldDecl => fieldDecl.DescendantNodes().OfType<VariableDeclaratorSyntax>());
         }
 
+        public static IEnumerable<PropertyDeclarationSyntax> GetProperties(SyntaxNode node)
+        {
+            var propertyDeclarations = node.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+            return propertyDeclarations;
+        }
+
         public static JavaField TranslateField(SemanticModel semanticModel, VariableDeclaratorSyntax node, CSharpSyntaxVisitor<IStmt> statementVisitor)
         {
             var symbol = semanticModel.GetDeclaredSymbol(node);
@@ -64,5 +70,17 @@ namespace LanguageTranslator
             };
         }
 
+        public static JavaField TranslateProp(SemanticModel semanticModel, PropertyDeclarationSyntax node, CSharpSyntaxVisitor<IStmt> statementVisitor)
+        {
+            var symbol = semanticModel.GetDeclaredSymbol(node);
+            return new JavaField
+            {
+                FieldName = node.Identifier.ToString(),
+                IsStatic = symbol.IsStatic,
+                Initialization = node.Initializer != null ? statementVisitor.Visit(node.Initializer) : null,
+                TypeSymbol = SymbolHelper.GetVariableSymbol(symbol),
+                DeclaredAccessibility = symbol.DeclaredAccessibility
+            };
+        }
     }
 }

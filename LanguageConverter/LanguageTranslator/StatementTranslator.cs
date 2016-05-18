@@ -84,6 +84,14 @@ namespace LanguageTranslator
             return Visit(node.Expression);
         }
 
+        public override IStmt VisitThrowStatement(ThrowStatementSyntax node)
+        {
+            return new ThrowStmt
+            {
+                Expression = Visit(node.Expression)
+            };
+        }
+
         public override IStmt VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             var result = extensionPoints.Translate(node, semanticModel, this);
@@ -94,7 +102,7 @@ namespace LanguageTranslator
                 Expression = Visit(node.Expression),
                 Arguments = node.ArgumentList.Arguments.Select(Visit).ToArray()
             };
-        }
+        }        
 
         public override IStmt VisitArgument(ArgumentSyntax node)
         {
@@ -254,6 +262,14 @@ namespace LanguageTranslator
             return Visit(node.Value);
         }
 
+        public override IStmt VisitInitializerExpression(InitializerExpressionSyntax node)
+        {            
+            return new IndexExpr
+            {
+                Elements = node.Expressions.Select(Visit).ToArray()
+            };
+        }
+
         public override IStmt VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
         {
             return new IndexExpr
@@ -299,9 +315,6 @@ namespace LanguageTranslator
             var result = extensionPoints.Translate(node, semanticModel, this);
             if (result != null)
                 return result;
-            //new A { a = 4, b = 5 } --> ??
-            //...
-            //new A(4, 5) --> new A(4,5);
             return new ObjectCreationExpr
             {
                 TypeInformation = new TypeInformation
@@ -341,6 +354,7 @@ namespace LanguageTranslator
         {
             return new ForStmt
             {
+                Declaration = node.Declaration != null ? Visit(node.Declaration) : null,
                 Initializers = node.Initializers.Select(Visit).ToArray(),
                 Condition = Visit(node.Condition),
                 Incrementors = node.Incrementors.Select(Visit).ToArray(),
@@ -350,14 +364,30 @@ namespace LanguageTranslator
 
         public override IStmt VisitForEachStatement(ForEachStatementSyntax node)
         {
-            //foreach(var a : b) -> ??
-            return new ReturnStmt();
+            var container = Visit(node.Expression);
+            var iteratorVariableName = node.Identifier.Value.ToString();
+            var symbol = semanticModel.GetDeclaredSymbol(node);
+            var iteratorVariable = new LocalDeclStmt
+            {
+                DeclName = iteratorVariableName,
+                TypeSymbol = SymbolHelper.GetVariableSymbol(symbol)
+            };
+            return new ForEachStmt
+            {
+                SourceContainer = container,
+                Iterator = iteratorVariable,
+                Body = WrapToBlock(Visit(node.Statement))
+            };
         }
 
         public override IStmt VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
         {
-            //посмотреть лямбды в java
-            return new ReturnStmt();
+            return new BinaryExpr
+            {
+                Left = Visit(node.Parameter),
+                Operation = "->",
+                Right = Visit(node.Body)
+            };
         }
 
         public override IStmt VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)

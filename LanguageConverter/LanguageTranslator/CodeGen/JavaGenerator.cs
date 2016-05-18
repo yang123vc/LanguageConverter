@@ -82,7 +82,8 @@ namespace LanguageTranslator.CodeGen
             {
                 extendsStr = !string.IsNullOrEmpty(baseClass) ? string.Format(" extends {0} ", baseClass) : "";
                 implementStr = interfaces.Any() ? string.Format(" implements {0} ", string.Join(", ", interfaces.Select(i => i.Name))) : "";
-                return string.Format("{0} class {1}{2}{3} {{ {4} }}", declaredAccesibility, javaTypeResolver.Resolve(node.TypeSymbol), extendsStr, implementStr, body).Trim();
+                return string.Format("{0} {1} class {2}{3}{4} {{ {5} }}", declaredAccesibility, node.IsAbstract ? "abstract" : "", 
+                                                                          javaTypeResolver.Resolve(node.TypeSymbol), extendsStr, implementStr, body).Trim();
             }
             extendsStr = interfaces.Any() ? string.Format(" extends {0} ", interfaces.First().Name) : "";
             implementStr = "";
@@ -103,7 +104,7 @@ namespace LanguageTranslator.CodeGen
         {
             var javaCtorCode = new StringBuilder();
             var declaredAccesibility = accessibilityResolver.ResolveAccesebility(ctorMethod.DeclaredAccessibility);
-            javaCtorCode.AppendFormat("{0} {1}({2}) ", declaredAccesibility, ctorMethod.Name, string.Join(", ", ctorMethod.Parameters.Select(GetArgument)));
+            javaCtorCode.AppendFormat("{0} {1}({2}) throws Exception ", declaredAccesibility, ctorMethod.Name, string.Join(", ", ctorMethod.Parameters.Select(GetArgument)));
             IStmt ctorBody = ctorMethod.Body;
             if (ctorMethod.BaseCtorCallExpr != null)
             {
@@ -132,20 +133,24 @@ namespace LanguageTranslator.CodeGen
         private string TraverseMethod(JavaMethod javaMethod)
         {
             var symbol = javaMethod.MethodSymbol;
-            var declaredAccesibility = javaMethod.IsAbstract ? "abstract" : accessibilityResolver.ResolveAccesebility(javaMethod.DeclaredAccessibility);
+            var declaredAccesibility = accessibilityResolver.ResolveAccesebility(javaMethod.DeclaredAccessibility);
+            var abstractStr = javaMethod.IsAbstract ? "abstract" : "";
             var staticStr = javaMethod.IsStatic ? "static" : "";
-            return string.Format("{0} {1} {2} {3}({4}) {5}",
+            var throwStr = "throws Exception";
+            return string.Format("{0} {1} {2} {3} {4}({5}) {6} {7}",
                 declaredAccesibility,
+                abstractStr,
                 staticStr,
-                javaTypeResolver.Resolve(symbol.ReturnType),
-                javaMethod.Name,
+                javaTypeResolver.Resolve(symbol),
+                javaMethod.Name.ToLower() == "main" ? "main" : javaMethod.Name,
                 string.Join(", ", javaMethod.Parameters.Select(GetArgument)),
+                throwStr,
                 statementTraverser.TraverseStmt(javaMethod.Body));
         }
 
         private object GetArgument(MethodParameterInfo methodParameterInfo)
         {
-            return string.Format("{0} {1}", methodParameterInfo.ParameterSymbol.Type, methodParameterInfo.Name);
+            return string.Format("{0} {1}", javaTypeResolver.Resolve(methodParameterInfo.ParameterSymbol), methodParameterInfo.Name);
         }
     }
 }

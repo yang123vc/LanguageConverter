@@ -47,6 +47,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
     <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
@@ -72,6 +73,13 @@
     <Compile Include="CodeGen\JavaGenerator.cs" />
     <Compile Include="CodeGen\JavaTypeResolver.cs" />
     <Compile Include="CodeGen\StatementTraverser.cs" />
+    <Compile Include="ExtensionPoints\.Net\ArrayExtensionPoint.cs" />
+    <Compile Include="ExtensionPoints\.Net\ConvertExtensionPoint.cs" />
+    <Compile Include="ExtensionPoints\.Net\ConsoleExtensionPoint.cs" />
+    <Compile Include="ExtensionPoints\.Net\StackExtensionPoint.cs" />
+    <Compile Include="ExtensionPoints\.Net\ListExtensionPoint.cs" />
+    <Compile Include="ExtensionPoints\.Net\ObjectExtensionPoint.cs" />
+    <Compile Include="ExtensionPoints\.Net\FuncExtensionPoint.cs" />
     <Compile Include="ExtensionPoints\.Net\StringExtensionPoint.cs" />
     <Compile Include="ExtensionPoints\ExtensionPointHelper.cs" />
     <Compile Include="ExtensionPoints\ITypeResolver.cs" />
@@ -98,6 +106,7 @@
     <Compile Include="Java\Nodes\ConditionalExpr.cs" />
     <Compile Include="Java\Nodes\CtorMethod.cs" />
     <Compile Include="Java\Nodes\DoWhileStmt.cs" />
+    <Compile Include="Java\Nodes\ForEachStmt.cs" />
     <Compile Include="Java\Nodes\ForStmt.cs" />
     <Compile Include="Java\Nodes\IdentifierExpr.cs" />
     <Compile Include="Java\Nodes\IfElseStmt.cs" />
@@ -115,6 +124,7 @@
     <Compile Include="Java\Nodes\SwitchCaseStmt.cs" />
     <Compile Include="Java\Nodes\SwitchStmt.cs" />
     <Compile Include="Java\Nodes\ThisExpr.cs" />
+    <Compile Include="Java\Nodes\ThrowStmt.cs" />
     <Compile Include="Java\Nodes\UnaryExpr.cs" />
     <Compile Include="Java\Nodes\WhileStmt.cs" />
     <Compile Include="Java\StmtKind.cs" />
